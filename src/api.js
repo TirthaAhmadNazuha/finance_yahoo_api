@@ -44,9 +44,13 @@ async function main() {
       const fromS3 = await getJson(`${financeYahoo.root_path}/quote/${market_symbol}/summary_news.json`);
       if (fromS3) {
         const days_difference = Math.floor((new Date().getTime() - fromS3.LastModified.getTime()) / (1000 * 60 * 60 * 24));
-        if (days_difference == 0) return fromS3.Body;
+        if (days_difference == 0) {
+          console.log(fromS3.Body)
+          return fromS3.Body
+        }
       }
-      return await financeYahoo.fetchAlticles(market_symbol);
+      const fromFetch = await financeYahoo.fetchAlticles(market_symbol);
+      return fromFetch
     });
 
     app.get('/market_symbols', {
@@ -72,13 +76,13 @@ async function main() {
     }, 10);
   });
 
-  // app.listen({ host: 'localhost', port: 5721 }, (err, address) => {
-  app.listen({ host: '0.0.0.0', port: 5721 }, (err, address) => {
+  app.listen({ host: 'localhost', port: 5721 }, (err, address) => {
+  // app.listen({ host: '0.0.0.0', port: 5721 }, (err, address) => {
     if (err) throw err;
     console.log(`Server running on ${address}`);
     console.log(`Swagger api on ${address}/docs`);
   });
 }
 
-// main();
-new CreateCluster(main, 6).start();
+main();
+// new CreateCluster(main, 6).start();

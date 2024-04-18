@@ -113,17 +113,19 @@ class FinanceYahoo {
           newsLinks[index].video_sources = video_sources[newsLinks[index].id];
         }
       });
-      const fromS3 = await getJson(`${this.root_path}/quote/${marketCode}/summary_news.json`);
-      if (fromS3) {
-        const merging = {};
-        fromS3.Body.concat(newsLinks).forEach((item) => {
-          merging[item.id] = item;
-        });
-        const res = Object.values(merging);
-        await uploadJson(`${this.root_path}/quote/${marketCode}/summary_news.json`, res);
-        return res;
+      if (newsLinks.length > 0) {
+        const fromS3 = await getJson(`${this.root_path}/quote/${marketCode}/summary_news.json`);
+        if (fromS3) {
+          const merging = {};
+          fromS3.Body.concat(newsLinks).forEach((item) => {
+            merging[item.id] = item;
+          });
+          const res = Object.values(merging);
+          await uploadJson(`${this.root_path}/quote/${marketCode}/summary_news.json`, res);
+          return res;
+        }
+        await uploadJson(`${this.root_path}/quote/${marketCode}/summary_news.json`, newsLinks);
       }
-      await uploadJson(`${this.root_path}/quote/${marketCode}/summary_news.json`, newsLinks);
       return newsLinks;
     } catch (error) {
       console.log(error);
